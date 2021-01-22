@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"jmsupload/pkg/httplib"
-	"jmsupload/pkg/model"
+	"jms-upload/pkg/httplib"
+	"jms-upload/pkg/model"
 )
 
 var AccessKeyUnauthorized = errors.New("access key unauthorized")

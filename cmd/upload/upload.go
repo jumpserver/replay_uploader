@@ -3,8 +3,9 @@ package upload
 import (
 	"flag"
 	"fmt"
-	"jmsupload/cmd/common"
-	"jmsupload/pkg/storage"
+
+	"jms-upload/cmd/common"
+	"jms-upload/pkg/storage"
 )
 
 func Execute() {

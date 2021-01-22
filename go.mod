@@ -1,4 +1,4 @@
-module jmsupload
+module jms-upload
 
 go 1.15
 

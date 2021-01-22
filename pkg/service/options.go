@@ -3,7 +3,7 @@ package service
 import (
 	"time"
 
-	"jmsupload/pkg/httplib"
+	"jms-upload/pkg/httplib"
 )
 
 type option struct {

@@ -10,8 +10,8 @@ import (
 
 	uuid "github.com/satori/go.uuid"
 
-	"jmsupload/pkg/httplib"
-	"jmsupload/pkg/service"
+	"jms-upload/pkg/httplib"
+	"jms-upload/pkg/service"
 )
 
 func NewJmsAuthService(coreHost, accessKey string) (*service.JMService, error) {

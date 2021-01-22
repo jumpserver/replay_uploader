@@ -1,9 +1,10 @@
 package upload
 
 import (
-	"jmsupload/cmd/common"
 	"testing"
 	"time"
+
+	"jms-upload/cmd/common"
 )
 
 func TestParseSessionID(t *testing.T) {

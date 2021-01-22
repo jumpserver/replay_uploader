@@ -1,7 +1,7 @@
 package main
 
 import (
-	"jmsupload/cmd/upload"
+	"jms-upload/cmd/upload"
 )
 
 func main() {

@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"jmsupload/pkg/model"
+	"jms-upload/pkg/model"
 	"strings"
 )
 
