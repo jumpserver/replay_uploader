@@ -94,7 +94,7 @@ func (c *Client) setReqHeaders(req *http.Request, params []map[string]string) {
 	}
 }
 
-func (c *Client) parseUrl(reqUrl string, params []map[string]string) string {
+func (c *Client) parseQueryUrl(reqUrl string, params []map[string]string) string {
 	if len(params) < 1 {
 		return reqUrl
 	}
@@ -109,6 +109,11 @@ func (c *Client) parseUrl(reqUrl string, params []map[string]string) string {
 	} else {
 		reqUrl += "?" + query.Encode()
 	}
+	return reqUrl
+}
+
+func (c *Client) parseUrl(reqUrl string, params []map[string]string) string {
+	reqUrl = c.parseQueryUrl(reqUrl, params)
 	if c.baseUrl != "" {
 		reqUrl = strings.TrimSuffix(c.baseUrl, "/") + reqUrl
 	}

@@ -2,6 +2,7 @@ package upload
 
 import (
 	"encoding/base64"
+	"net/url"
 	"testing"
 	"time"
 
@@ -25,4 +26,6 @@ func TestExecute(t *testing.T) {
 	key := "853db481-b604-4839-9169-5a3f2588c416:f8ea716c-b088-44d5-848f-d5fecbdc381c"
 	result := base64.StdEncoding.EncodeToString([]byte(key))
 	t.Log(result)
+	query := url.Values{}
+	t.Logf("query: `%s`",query.Encode())
 }
