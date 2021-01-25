@@ -109,14 +109,14 @@ func (c *Client) parseUrl(reqUrl string, params []map[string]string) string {
 	} else {
 		reqUrl += "?" + query.Encode()
 	}
+	if c.baseUrl != "" {
+		reqUrl = strings.TrimSuffix(c.baseUrl, "/") + reqUrl
+	}
 	return reqUrl
 }
 
 func (c *Client) newRequest(method, reqUrl string, data interface{}, params []map[string]string) (*http.Request, error) {
 	reqUrl = c.parseUrl(reqUrl, params)
-	if c.baseUrl != "" {
-		reqUrl = strings.TrimRight(c.baseUrl, "/") + reqUrl
-	}
 	dataRaw, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -167,27 +167,27 @@ func (c *Client) Do(method, reqUrl string, data, res interface{}, params ...map[
 	return
 }
 
-func (c *Client) Get(url string, res interface{}, params ...map[string]string) (resp *http.Response, err error) {
-	return c.Do("GET", url, nil, res, params...)
+func (c *Client) Get(reqUrl string, res interface{}, params ...map[string]string) (resp *http.Response, err error) {
+	return c.Do("GET", reqUrl, nil, res, params...)
 }
 
-func (c *Client) Post(url string, data interface{}, res interface{}, params ...map[string]string) (resp *http.Response, err error) {
-	return c.Do("POST", url, data, res, params...)
+func (c *Client) Post(reqUrl string, data interface{}, res interface{}, params ...map[string]string) (resp *http.Response, err error) {
+	return c.Do("POST", reqUrl, data, res, params...)
 }
 
-func (c *Client) Delete(url string, res interface{}, params ...map[string]string) (resp *http.Response, err error) {
-	return c.Do("DELETE", url, nil, res, params...)
+func (c *Client) Delete(reqUrl string, res interface{}, params ...map[string]string) (resp *http.Response, err error) {
+	return c.Do("DELETE", reqUrl, nil, res, params...)
 }
 
-func (c *Client) Put(url string, data interface{}, res interface{}, params ...map[string]string) (resp *http.Response, err error) {
-	return c.Do("PUT", url, data, res, params...)
+func (c *Client) Put(reqUrl string, data interface{}, res interface{}, params ...map[string]string) (resp *http.Response, err error) {
+	return c.Do("PUT", reqUrl, data, res, params...)
 }
 
-func (c *Client) Patch(url string, data interface{}, res interface{}, params ...map[string]string) (resp *http.Response, err error) {
-	return c.Do("PATCH", url, data, res, params...)
+func (c *Client) Patch(reqUrl string, data interface{}, res interface{}, params ...map[string]string) (resp *http.Response, err error) {
+	return c.Do("PATCH", reqUrl, data, res, params...)
 }
 
-func (c *Client) UploadFile(url string, gFile string, res interface{}, params ...map[string]string) (err error) {
+func (c *Client) UploadFile(reqUrl string, gFile string, res interface{}, params ...map[string]string) (err error) {
 	f, err := os.Open(gFile)
 	if err != nil {
 		return err
@@ -207,11 +207,8 @@ func (c *Client) UploadFile(url string, gFile string, res interface{}, params ..
 	if err != nil {
 		return err
 	}
-	url = c.parseUrl(url, params)
-	if c.baseUrl != "" {
-		url = strings.TrimSuffix(c.baseUrl, "/") + url
-	}
-	req, err := http.NewRequest("POST", url, buf)
+	reqUrl = c.parseUrl(reqUrl, params)
+	req, err := http.NewRequest("POST", reqUrl, buf)
 	if err != nil {
 		return err
 	}
@@ -253,7 +250,7 @@ func (c *Client) UploadFile(url string, gFile string, res interface{}, params ..
 	return
 }
 
-func (c *Client) UploadMultiPartFile(url string, gFile string, res interface{}, params ...map[string]string) (err error) {
+func (c *Client) UploadMultiPartFile(reqUrl string, gFile string, res interface{}, params ...map[string]string) (err error) {
 	f, err := os.Open(gFile)
 	if err != nil {
 		return err
@@ -287,11 +284,8 @@ func (c *Client) UploadMultiPartFile(url string, gFile string, res interface{}, 
 		}
 
 	}()
-	url = c.parseUrl(url, params)
-	if c.baseUrl != "" {
-		url = strings.TrimSuffix(c.baseUrl, "/") + url
-	}
-	req, err := http.NewRequest(http.MethodPost, url, bodyReader)
+	reqUrl = c.parseUrl(reqUrl, params)
+	req, err := http.NewRequest(http.MethodPost, reqUrl, bodyReader)
 	if err != nil {
 		return err
 	}
