@@ -208,6 +208,9 @@ func (c *Client) UploadFile(url string, gFile string, res interface{}, params ..
 		return err
 	}
 	url = c.parseUrl(url, params)
+	if c.baseUrl != "" {
+		url = strings.TrimSuffix(c.baseUrl, "/") + url
+	}
 	req, err := http.NewRequest("POST", url, buf)
 	if err != nil {
 		return err
@@ -285,6 +288,9 @@ func (c *Client) UploadMultiPartFile(url string, gFile string, res interface{}, 
 
 	}()
 	url = c.parseUrl(url, params)
+	if c.baseUrl != "" {
+		url = strings.TrimSuffix(c.baseUrl, "/") + url
+	}
 	req, err := http.NewRequest(http.MethodPost, url, bodyReader)
 	if err != nil {
 		return err

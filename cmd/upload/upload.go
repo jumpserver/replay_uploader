@@ -34,7 +34,7 @@ func Execute() {
 
 	replayStorage := storage.NewReplayStorage(&terminalConfig)
 	if replayStorage == nil {
-		err = jmsService.Upload(replayPath, targetDate)
+		err = jmsService.Upload(sid, replayPath)
 	} else {
 		err = replayStorage.Upload(replayPath, targetDate)
 	}

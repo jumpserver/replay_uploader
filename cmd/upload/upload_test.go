@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"encoding/base64"
 	"testing"
 	"time"
 
@@ -8,14 +9,20 @@ import (
 )
 
 func TestParseSessionID(t *testing.T) {
-	replayFile := "/opt/jumpserver/koko/data/replay/2021-01-20/90b11402-39df-4ba9-b14a-2344b8585888.replay.gz"
+	replayFile := "/Users/eric/Documents/fit2cloud/jumpserver/data/media/replay/3a52b5bc-f155-4a5b-9143-1ae887fe5d5e.replay.gz"
 	sid, err := common.ParseSessionID(replayFile)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if sid != "90b11402-39df-4ba9-b14a-2344b8585888" {
-		t.Fatalf("ParseSessionID should be 90b11402-39df-4ba9-b14a-2344b8585888, but %s", sid)
+	if sid != "3a52b5bc-f155-4a5b-9143-1ae887fe5d5e" {
+		t.Fatalf("ParseSessionID should be 3a52b5bc-f155-4a5b-9143-1ae887fe5d5e, but %s", sid)
 	}
 	t.Log("sid success: ", sid)
 	t.Log("date: ", time.Now().Format("2006-01-02"))
+}
+
+func TestExecute(t *testing.T) {
+	key := "853db481-b604-4839-9169-5a3f2588c416:f8ea716c-b088-44d5-848f-d5fecbdc381c"
+	result := base64.StdEncoding.EncodeToString([]byte(key))
+	t.Log(result)
 }

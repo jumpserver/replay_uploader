@@ -44,7 +44,7 @@ func decodeAccessKey(p string) (*httplib.SigAuth, error) {
 // 录像的文件必须是固定格式 sessionID.replay.gz; eg: 90b11402-39df-4ba9-b14a-2344b8585888.replay.gz
 func ParseSessionID(replayFilePath string) (string, error) {
 	fileName := filepath.Base(replayFilePath)
-	sid := strings.TrimRight(fileName, replayFileNameSuffix)
+	sid := strings.TrimSuffix(fileName, replayFileNameSuffix)
 	if _, err := uuid.FromString(sid); err != nil {
 		return "", err
 	}
