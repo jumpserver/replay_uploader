@@ -295,7 +295,7 @@ func (c *Client) UploadMultiPartFile(reqUrl string, gFile string, res interface{
 		return err
 	}
 	c.setReqHeaders(req, params)
-	req.Header.Add("Content-Type", formWriter.FormDataContentType())
+	req.Header.Set("Content-Type", formWriter.FormDataContentType())
 
 	// This operation will block until both the formWriter
 	// and bodyWriter have been closed by the goroutine,

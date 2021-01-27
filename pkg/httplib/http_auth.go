@@ -1,6 +1,7 @@
 package httplib
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -11,6 +12,8 @@ var (
 	_ AuthSign = (*SigAuth)(nil)
 
 	_ AuthSign = (*BasicAuth)(nil)
+
+	_ AuthSign = (*BearerTokenAuth)(nil)
 )
 
 const (
@@ -44,4 +47,12 @@ type BasicAuth struct {
 
 func (auth *BasicAuth) Sign(r *http.Request) {
 	r.SetBasicAuth(auth.Username, auth.Password)
+}
+
+type BearerTokenAuth struct {
+	Token string
+}
+
+func (auth *BearerTokenAuth) Sign(r *http.Request) {
+	r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", auth.Token))
 }
