@@ -12,9 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -193,36 +191,25 @@ func (c *Client) Patch(reqUrl string, data interface{}, res interface{}, params 
 }
 
 func (c *Client) UploadFile(reqUrl string, gFile string, res interface{}, params ...map[string]string) (err error) {
-	f, err := os.Open(gFile)
+	fd, err := os.Open(gFile)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
-	buf := new(bytes.Buffer)
-	bodyWriter := multipart.NewWriter(buf)
-	gName := filepath.Base(gFile)
-	part, err := bodyWriter.CreateFormFile("file", gName)
+	bufferFd := bufio.NewReader(fd)
+	defer fd.Close()
+	fi, err := fd.Stat()
 	if err != nil {
 		return err
 	}
-	if _, err = io.Copy(part, f); err != nil {
-		return err
-	}
-	err = bodyWriter.Close()
-	if err != nil {
-		return err
-	}
+	contentType, contentLen, bodyReader := getFileMultipartBodyReader("file", fd.Name(), fi.Size(), bufferFd)
 	reqUrl = c.parseUrl(reqUrl, params)
-	req, err := http.NewRequest("POST", reqUrl, buf)
+	req, err := http.NewRequest(http.MethodPost, reqUrl, bodyReader)
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Content-Type", bodyWriter.FormDataContentType())
 	c.setReqHeaders(req, params)
-	/*
-		上传文件时，取消 timeout
-		A Timeout of zero means no timeout.
-	*/
+	req.ContentLength = contentLen
+	req.Header.Set("Content-Type", contentType)
 	client := http.Client{
 		Jar: c.http.Jar,
 	}
@@ -255,82 +242,18 @@ func (c *Client) UploadFile(reqUrl string, gFile string, res interface{}, params
 	return
 }
 
-func (c *Client) UploadMultiPartFile(reqUrl string, gFile string, res interface{}, params ...map[string]string) (err error) {
-	f, err := os.Open(gFile)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	bufferedFileReader := bufio.NewReader(f)
-	bodyReader, bodyWriter := io.Pipe()
-	formWriter := multipart.NewWriter(bodyWriter)
+func getFileMultipartBodyReader(field, filename string, size int64,
+	reader io.Reader) (contentType string, contentLen int64, bodyReader io.Reader) {
+	startPartBuf := bytes.NewBufferString("")
+	bodyWriter := multipart.NewWriter(startPartBuf)
+	// use the body_writer to write the Part headers to the buffer
+	_, _ = bodyWriter.CreateFormFile(field, filename)
+	boundary := bodyWriter.Boundary()
+	endString := fmt.Sprintf("\r\n--%s--\r\n", boundary)
+	endPartBuf := bytes.NewBufferString(endString)
 
-	// Store the first write error in writeErr.
-	var (
-		writeErr error
-		errOnce  sync.Once
-	)
-	setErr := func(err error) {
-		if err != nil {
-			errOnce.Do(func() { writeErr = err })
-		}
-	}
-	go func() {
-		gName := filepath.Base(gFile)
-		partWriter, err := formWriter.CreateFormFile("file", gName)
-		if err != nil {
-			setErr(err)
-			return
-		}
-		defer bodyWriter.Close()
-		defer formWriter.Close()
-		if _, err := io.Copy(partWriter, bufferedFileReader); err != nil {
-			setErr(err)
-		}
-
-	}()
-	reqUrl = c.parseUrl(reqUrl, params)
-	req, err := http.NewRequest(http.MethodPost, reqUrl, bodyReader)
-	if err != nil {
-		return err
-	}
-	c.setReqHeaders(req, params)
-	req.Header.Set("Content-Type", formWriter.FormDataContentType())
-
-	// This operation will block until both the formWriter
-	// and bodyWriter have been closed by the goroutine,
-	// or in the event of a HTTP error.
-	client := http.Client{
-		Jar: c.http.Jar,
-	}
-	resp, err := client.Do(req)
-	if writeErr != nil {
-		return writeErr
-	}
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if resp.StatusCode >= 400 {
-		msg := fmt.Sprintf("%s %s failed, get code: %d, %s", req.Method, req.URL, resp.StatusCode, string(body))
-		err = errors.New(msg)
-		return
-	}
-
-	// If is buffer return the raw response body
-	if buf, ok := res.(*bytes.Buffer); ok {
-		buf.Write(body)
-		return
-	}
-	// Unmarshal response body to result struct
-	if res != nil {
-		err = json.Unmarshal(body, res)
-		if err != nil {
-			msg := fmt.Sprintf("%s %s failed, unmarshal '%s' response failed: %s", req.Method, req.URL, body, err)
-			err = errors.New(msg)
-			return
-		}
-	}
+	bodyReader = io.MultiReader(startPartBuf, reader, endPartBuf)
+	contentLen = int64(startPartBuf.Len()) + size + int64(endPartBuf.Len())
+	contentType = bodyWriter.FormDataContentType()
 	return
 }
