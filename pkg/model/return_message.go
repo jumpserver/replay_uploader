@@ -41,5 +41,5 @@ func ReturnSuccessMsg(msg string) {
 		Msg:  msg,
 		Code: CodeOK,
 	}
-	ReturnMsg(os.Stdin, m)
+	ReturnMsg(os.Stdout, m)
 }
