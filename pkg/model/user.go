@@ -11,11 +11,3 @@ type User struct {
 	OTPLevel int    `json:"otp_level"`
 }
 
-type TokenUser struct {
-	UserID         string `json:"user"`
-	UserName       string `json:"username"`
-	AssetID        string `json:"asset"`
-	Hostname       string `json:"hostname"`
-	SystemUserID   string `json:"system_user"`
-	SystemUserName string `json:"system_user_name"`
-}
