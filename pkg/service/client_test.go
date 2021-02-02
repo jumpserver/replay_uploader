@@ -1,9 +1,10 @@
 package service
 
 import (
-	"jms-upload/pkg/httplib"
 	"testing"
 	"time"
+
+	"github.com/jumpserver/replay_uploader/pkg/httplib"
 )
 
 func setupJMS() *JMService {

@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"jms-upload/pkg/httplib"
-	"jms-upload/pkg/model"
+	"github.com/jumpserver/replay_uploader/pkg/httplib"
+	"github.com/jumpserver/replay_uploader/pkg/model"
 )
 
 var AccessKeyUnauthorized = errors.New("access key unauthorized")

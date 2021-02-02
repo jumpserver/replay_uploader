@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"jms-upload/pkg/httplib"
-	"jms-upload/pkg/service"
+	"github.com/jumpserver/replay_uploader/pkg/httplib"
+	"github.com/jumpserver/replay_uploader/pkg/service"
 )
 
 func NewJmsAuthService(coreHost, accessKey string) (*service.JMService, error) {

@@ -1,6 +1,6 @@
-name: 'build JMS tool'
+name: 'build JMS replay uploader'
 author: 'Eric Lee'
-description: 'Build JMS tool'
+description: 'Build JMS replay uploader'
 inputs:
   GOOS:
     description: build os
@@ -17,7 +17,7 @@ runs:
     - id: build-go-main
       run: |
         go build -o .
-        tar -czvf jms-upload_${{ runner.os }}.tar.gz jms-upload*
-        echo "::set-output name=filename::$(echo jms-upload_${{ runner.os }}.tar.gz)"
+        tar -czvf replay_uploader_${{ runner.os }}.tar.gz replay_uploader*
+        echo "::set-output name=filename::$(echo replay_uploader_${{ runner.os }}.tar.gz)"
         ls -al
       shell: bash

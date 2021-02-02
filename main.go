@@ -1,7 +1,7 @@
 package main
 
 import (
-	"jms-upload/cmd/upload"
+	"github.com/jumpserver/replay_uploader/cmd/upload"
 )
 
 func main() {

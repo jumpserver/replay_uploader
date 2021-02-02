@@ -1,4 +1,4 @@
-module jms-upload
+module github.com/jumpserver/replay_uploader
 
 go 1.15
 

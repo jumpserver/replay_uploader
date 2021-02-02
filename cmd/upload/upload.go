@@ -3,9 +3,9 @@ package upload
 import (
 	"flag"
 	"fmt"
-	"jms-upload/pkg/model"
 
-	"jms-upload/pkg/storage"
+	"github.com/jumpserver/replay_uploader/pkg/model"
+	"github.com/jumpserver/replay_uploader/pkg/storage"
 )
 
 func Execute() {

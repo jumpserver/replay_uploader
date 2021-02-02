@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"jms-upload/pkg/model"
+	"github.com/jumpserver/replay_uploader/pkg/model"
 )
 
 func ReturnMsg(writer io.Writer, m model.Msg) {

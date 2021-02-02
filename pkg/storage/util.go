@@ -1,8 +1,9 @@
 package storage
 
 import (
-	"jms-upload/pkg/model"
 	"strings"
+
+	"github.com/jumpserver/replay_uploader/pkg/model"
 )
 
 type ReplayStorage interface {
