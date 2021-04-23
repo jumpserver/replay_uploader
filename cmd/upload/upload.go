@@ -63,8 +63,8 @@ func Execute() {
 
 	var sidReplayPath = replayPath
 	if !model.IsGzipFile(replayPath) {
-		dirpath := filepath.Dir(replayPath)
-		sidReplayPath = filepath.Join(dirpath, sid+model.SuffixReplayFileName)
+		dirPath := filepath.Dir(replayPath)
+		sidReplayPath = filepath.Join(dirPath, sid+model.SuffixReplayFileName)
 		if err = model.CompressToGzipFile(replayPath, sidReplayPath); err != nil {
 			msg := fmt.Sprintf("压缩录像文件失败 %s", replayPath)
 			ReturnErrorMsg(msg, err)
@@ -83,6 +83,9 @@ func Execute() {
 		msg := fmt.Sprintf("上传文件失败 %s", sidReplayPath)
 		ReturnErrorMsg(msg, err)
 		return
+	}
+	if forceDelete {
+		_ = os.Remove(replayPath)
 	}
 	err = jmsService.FinishReply(sid)
 	if err != nil {

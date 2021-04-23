@@ -11,6 +11,7 @@ import (
 	replayPath		指 录像文件，未经gzip压缩的录像文件
 	targetDate		指 会话生成日期，上传 存储时需要
 	sid				指 会话的ID
+	forceDelete		指 成功上传之后，是否删除录像 file 源文件
 */
 
 var (
@@ -20,6 +21,7 @@ var (
 	replayPath    string
 	targetDate    string
 	sid           string
+	forceDelete   bool
 )
 
 func init() {
@@ -29,5 +31,5 @@ func init() {
 	flag.StringVar(&replayPath, "file", "", "Replay file path，录像文件路径")
 	flag.StringVar(&sid, "sid", "", "Session ID, 会话ID")
 	flag.StringVar(&targetDate, "date", "", "Target date, 默认当前日期，格式 2021-01-20")
-
+	flag.BoolVar(&forceDelete, "remove", false, "成功上传后，是否删除原 file 文件")
 }
