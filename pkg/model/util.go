@@ -1,6 +1,10 @@
 package model
 
 import (
+	"compress/gzip"
+	"encoding/base64"
+	"io"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -20,4 +24,40 @@ func ParseSessionID(replayFilePath string) (string, error) {
 
 func GetCurrentDate() string {
 	return time.Now().Format("2006-01-02")
+}
+
+func IsValidateSessionID(sid string) bool {
+	_, err := uuid.FromString(sid)
+	return err == nil
+}
+
+func DecodeBase64String(p string) (string, error) {
+	result, err := base64.StdEncoding.DecodeString(p)
+	return string(result), err
+}
+
+func CompressToGzipFile(srcPath, dstPath string) error {
+	sf, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer sf.Close()
+	df, err := os.Create(dstPath)
+	if err != nil {
+		return err
+	}
+	defer df.Close()
+	writer := gzip.NewWriter(df)
+	writer.Name = dstPath
+	writer.ModTime = time.Now().UTC()
+	_, err = io.Copy(writer, sf)
+	if err != nil {
+		return err
+	}
+	return writer.Close()
+}
+
+func IsGzipFile(gzipFile string) bool {
+	extensionName := filepath.Ext(gzipFile)
+	return strings.HasSuffix(extensionName, ".gz")
 }

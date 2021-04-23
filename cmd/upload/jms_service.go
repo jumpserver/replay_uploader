@@ -1,9 +1,8 @@
 package upload
 
 import (
-	"bytes"
-	"encoding/base64"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jumpserver/replay_uploader/pkg/httplib"
@@ -22,18 +21,12 @@ func NewJmsAuthService(coreHost, accessKey string) (*service.JMService, error) {
 }
 
 func decodeAccessKey(p string) (*httplib.SigAuth, error) {
-	result, err := base64.StdEncoding.DecodeString(p)
-	if err != nil {
-		return nil, err
-	}
-	accessKeyResult := bytes.Split(result, []byte(":"))
+	accessKeyResult := strings.Split(p, ":")
 	if len(accessKeyResult) != 2 {
-		return nil, fmt.Errorf("unknow accesskey %s", result)
+		return nil, fmt.Errorf("unknow accesskey %s", p)
 	}
-
 	return &httplib.SigAuth{
-		KeyID:    string(bytes.TrimSpace(accessKeyResult[0])),
-		SecretID: string(bytes.TrimSpace(accessKeyResult[1])),
+		KeyID:    strings.TrimSpace(accessKeyResult[0]),
+		SecretID: strings.TrimSpace(accessKeyResult[1]),
 	}, nil
 }
-

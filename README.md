@@ -14,6 +14,12 @@
 
     -key string
     Access key，组件使用的认证Key
+    
+    -keyfile string
+    Key file，存储 access key 的文件路径
+    
+    -sid string
+    Session ID, 会话ID
 
     -url string
     JumpServer URL，JMS Core的地址 (default "http://127.0.0.1:8080")
