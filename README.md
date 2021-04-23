@@ -18,6 +18,9 @@
     -keyfile string
     Key file，存储 access key 的文件路径
     
+    -remove bool
+    成功上传后，是否删除原 file 文件, 不写默认是 false
+    
     -sid string
     Session ID, 会话ID
 
