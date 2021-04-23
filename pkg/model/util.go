@@ -3,6 +3,7 @@ package model
 import (
 	"compress/gzip"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,14 +13,18 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// 录像的文件必须是固定格式 sessionID.replay.gz; eg: 90b11402-39df-4ba9-b14a-2344b8585888.replay.gz
 func ParseSessionID(replayFilePath string) (string, error) {
 	fileName := filepath.Base(replayFilePath)
-	sid := strings.TrimSuffix(fileName, SuffixReplayFileName)
-	if _, err := uuid.FromString(sid); err != nil {
-		return "", err
+	if IsValidateSessionID(fileName) {
+		return fileName, nil
 	}
-	return sid, nil
+	if IsGzipFile(replayFilePath) {
+		filenameSlice := strings.Split(fileName, ".")
+		if IsValidateSessionID(filenameSlice[0]) {
+			return filenameSlice[0], nil
+		}
+	}
+	return "", fmt.Errorf("do not contains session sid %s", replayFilePath)
 }
 
 func GetCurrentDate() string {
@@ -60,4 +65,28 @@ func CompressToGzipFile(srcPath, dstPath string) error {
 func IsGzipFile(gzipFile string) bool {
 	extensionName := filepath.Ext(gzipFile)
 	return strings.HasSuffix(extensionName, ".gz")
+}
+
+func CopyFile(src, dst string) error {
+	sourceFileStat, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+
+	if !sourceFileStat.Mode().IsRegular() {
+		return fmt.Errorf("%s is not a regular file", src)
+	}
+	source, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer source.Close()
+
+	destination, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destination.Close()
+	_, err = io.Copy(destination, source)
+	return err
 }

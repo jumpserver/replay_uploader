@@ -18,11 +18,11 @@
     -keyfile string
     Key file，存储 access key 的文件路径
     
-    -remove bool
-    成功上传后，是否删除原 file 文件, 不写默认是 false
+    -remove
+    成功上传后，是否删除原 file 文件, (如果不写，默认不删除）
     
     -sid string
-    Session ID, 会话ID
+    Session ID, 会话ID （如果不写，则从 Replay file 文件名中提取会话 session id）
 
     -url string
     JumpServer URL，JMS Core的地址 (default "http://127.0.0.1:8080")

@@ -17,6 +17,13 @@ func Execute() {
 	if targetDate == "" {
 		targetDate = model.GetCurrentDate()
 	}
+	var err error
+	if sid == "" {
+		if sid, err = model.ParseSessionID(replayPath); err != nil {
+			ReturnErrorMsg("无合法的会话ID", err)
+			return
+		}
+	}
 	if !model.IsValidateSessionID(sid) {
 		msg := fmt.Sprintf("不是合法的会话ID %s", sid)
 		err := fmt.Errorf("不是合法的会话ID %s", sid)
@@ -60,17 +67,25 @@ func Execute() {
 		ReturnErrorMsg(msg, err)
 		return
 	}
+	dirPath := filepath.Dir(replayPath)
+	sidReplayPath := filepath.Join(dirPath, sid+model.SuffixReplayFileName)
 
-	var sidReplayPath = replayPath
 	if !model.IsGzipFile(replayPath) {
-		dirPath := filepath.Dir(replayPath)
-		sidReplayPath = filepath.Join(dirPath, sid+model.SuffixReplayFileName)
 		if err = model.CompressToGzipFile(replayPath, sidReplayPath); err != nil {
 			msg := fmt.Sprintf("压缩录像文件失败 %s", replayPath)
 			ReturnErrorMsg(msg, err)
 			return
 		}
 		defer os.Remove(sidReplayPath)
+	} else {
+		if replayPath != sidReplayPath {
+			if err = model.CopyFile(replayPath, sidReplayPath); err != nil {
+				msg := fmt.Sprintf("录像文件重命名失败 %s", replayPath)
+				ReturnErrorMsg(msg, err)
+				return
+			}
+			defer os.Remove(sidReplayPath)
+		}
 	}
 
 	replayStorage := storage.NewReplayStorage(&terminalConfig)
