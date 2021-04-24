@@ -18,11 +18,9 @@ func ParseSessionID(replayFilePath string) (string, error) {
 	if IsValidateSessionID(fileName) {
 		return fileName, nil
 	}
-	if IsGzipFile(replayFilePath) {
-		filenameSlice := strings.Split(fileName, ".")
-		if IsValidateSessionID(filenameSlice[0]) {
-			return filenameSlice[0], nil
-		}
+	filenameSlice := strings.Split(fileName, ".")
+	if IsValidateSessionID(filenameSlice[0]) {
+		return filenameSlice[0], nil
 	}
 	return "", fmt.Errorf("do not contains session sid %s", replayFilePath)
 }
