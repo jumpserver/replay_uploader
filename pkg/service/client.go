@@ -13,6 +13,11 @@ import (
 
 var AccessKeyUnauthorized = errors.New("access key unauthorized")
 
+const (
+	orgHeaderKey = "X-JMS-ORG"
+	orgHeaderValue= "ROOT"
+)
+
 func NewAuthJMService(opts ...Option) (*JMService, error) {
 	defaultOption := option{
 		CoreHost: "http://127.0.0.1:8080",
@@ -28,6 +33,7 @@ func NewAuthJMService(opts ...Option) (*JMService, error) {
 	if defaultOption.sign != nil {
 		httpClient.SetAuthSign(defaultOption.sign)
 	}
+	httpClient.SetHeader(orgHeaderKey, orgHeaderValue)
 	return &JMService{authClient: httpClient}, nil
 }
 

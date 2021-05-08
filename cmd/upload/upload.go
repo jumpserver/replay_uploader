@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/jumpserver/replay_uploader/pkg/model"
 	"github.com/jumpserver/replay_uploader/pkg/storage"
@@ -92,7 +93,8 @@ func Execute() {
 	if replayStorage == nil {
 		err = jmsService.Upload(sid, sidReplayPath)
 	} else {
-		err = replayStorage.Upload(sidReplayPath, targetDate)
+		target := strings.Join([]string{targetDate, sid + model.SuffixReplayFileName}, "/")
+		err = replayStorage.Upload(sidReplayPath, target)
 	}
 	if err != nil {
 		msg := fmt.Sprintf("上传文件失败 %s", sidReplayPath)
