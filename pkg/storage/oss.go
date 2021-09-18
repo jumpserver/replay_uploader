@@ -2,8 +2,6 @@ package storage
 
 import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-
-	"github.com/jumpserver/koko/pkg/logger"
 )
 
 type OSSReplayStorage struct {
@@ -20,7 +18,6 @@ func (o OSSReplayStorage) Upload(gZipFilePath, target string) (err error) {
 	}
 	bucket, err := client.Bucket(o.Bucket)
 	if err != nil {
-		logger.Error(err.Error())
 		return
 	}
 	return bucket.PutObjectFromFile(target, gZipFilePath)
