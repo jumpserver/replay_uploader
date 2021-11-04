@@ -15,6 +15,13 @@ import (
 
 func Execute() {
 	flag.Parse()
+	if infoFlag {
+		fmt.Printf("Version:             %s\n", Version)
+		fmt.Printf("Git Commit Hash:     %s\n", GitHash)
+		fmt.Printf("UTC Build Time :     %s\n", BuildStamp)
+		fmt.Printf("Go Version:          %s\n", GoVersion)
+		return
+	}
 	if targetDate == "" {
 		targetDate = model.GetCurrentDate()
 	}

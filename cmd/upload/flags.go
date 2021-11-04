@@ -22,6 +22,8 @@ var (
 	targetDate    string
 	sid           string
 	forceDelete   bool
+
+	infoFlag   = false
 )
 
 func init() {
@@ -32,4 +34,6 @@ func init() {
 	flag.StringVar(&sid, "sid", "", "Session ID, 会话ID")
 	flag.StringVar(&targetDate, "date", "", "Target date, 默认当前日期，格式 2021-01-20")
 	flag.BoolVar(&forceDelete, "remove", false, "成功上传后，是否删除原 file 文件")
+
+	flag.BoolVar(&infoFlag, "V", false, "version info")
 }
