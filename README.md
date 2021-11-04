@@ -1,6 +1,6 @@
 # JMS 录像上传工具
 
-此工具主要用于 JumpServer 组件录像上传到指定存储，主要包括 OSS、Azure 和 S3 存储。
+此工具主要用于 JumpServer 组件录像上传到指定存储，主要包括 OSS、Azure、OBS 和 S3 存储。
 
 
 ```
