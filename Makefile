@@ -14,6 +14,7 @@ GOBUILD=CGO_ENABLED=0 go build -trimpath -ldflags "$(GOLDFLAGS)"
 
 PLATFORM_LIST = \
 	darwin-amd64 \
+	darwin-arm64 \
 	linux-amd64 \
 	linux-arm64
 
@@ -24,6 +25,13 @@ all-arch: $(PLATFORM_LIST) $(WINDOWS_ARCH_LIST)
 
 darwin-amd64:
 	GOARCH=amd64 GOOS=darwin $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@
+	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
+	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
+	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
+	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$@ $(BUILDDIR)/$(NAME)-$@
+
+darwin-arm64:
+	GOARCH=arm64 GOOS=darwin $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@
 	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
 	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
 	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
