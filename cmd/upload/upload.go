@@ -23,7 +23,7 @@ func Execute() {
 		return
 	}
 	if targetDate == "" {
-		targetDate = util.GetCurrentDate()
+		targetDate = util.CurrentDate()
 	}
 	var err error
 	if sid == "" {
@@ -32,7 +32,7 @@ func Execute() {
 			return
 		}
 	}
-	if !util.IsValidateSessionID(sid) {
+	if !util.IsUUID(sid) {
 		msg := fmt.Sprintf("不是合法的会话ID %s", sid)
 		err := fmt.Errorf("不是合法的会话ID %s", sid)
 		ReturnErrorMsg(msg, err)
