@@ -15,21 +15,21 @@ import (
 
 func ParseSessionID(replayFilePath string) (string, error) {
 	fileName := filepath.Base(replayFilePath)
-	if IsValidateSessionID(fileName) {
+	if IsUUID(fileName) {
 		return fileName, nil
 	}
 	filenameSlice := strings.Split(fileName, ".")
-	if IsValidateSessionID(filenameSlice[0]) {
+	if IsUUID(filenameSlice[0]) {
 		return filenameSlice[0], nil
 	}
 	return "", fmt.Errorf("do not contains session sid %s", replayFilePath)
 }
 
-func GetCurrentDate() string {
+func CurrentDate() string {
 	return time.Now().Format("2006-01-02")
 }
 
-func IsValidateSessionID(sid string) bool {
+func IsUUID(sid string) bool {
 	_, err := uuid.FromString(sid)
 	return err == nil
 }

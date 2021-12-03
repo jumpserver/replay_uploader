@@ -24,6 +24,8 @@ var (
 	forceDelete   bool
 
 	infoFlag = false
+
+	scanDir string
 )
 
 func init() {
@@ -36,4 +38,6 @@ func init() {
 	flag.BoolVar(&forceDelete, "remove", false, "成功上传后，是否删除原 file 文件")
 
 	flag.BoolVar(&infoFlag, "V", false, "version info")
+
+	flag.StringVar(&scanDir, "scanDir", "", "扫描目录该录像文件上传")
 }
