@@ -1,30 +1,45 @@
 package upload
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
-
-	"github.com/jumpserver/replay_uploader/pkg/model"
 )
 
-func ReturnMsg(writer io.Writer, m model.Msg) {
+func ReturnMsg(writer io.Writer, m Msg) {
 	_, _ = fmt.Fprint(writer, m)
 }
 
 func ReturnErrorMsg(msg string, err error) {
-	m := model.Msg{
+	m := Msg{
 		Err:  err.Error(),
 		Msg:  msg,
-		Code: model.CodeErr,
+		Code: CodeErr,
 	}
 	ReturnMsg(os.Stderr, m)
 }
 
 func ReturnSuccessMsg(msg string) {
-	m := model.Msg{
+	m := Msg{
 		Msg:  msg,
-		Code: model.CodeOK,
+		Code: CodeOK,
 	}
 	ReturnMsg(os.Stdout, m)
+}
+
+const (
+	CodeOK  = 200
+	CodeErr = 400
+)
+
+type Msg struct {
+	Err  string `json:"err,omitempty"`
+	Msg  string `json:"msg"`
+	Code int    `json:"code"`
+}
+
+func (m Msg) String() string {
+	result, _ := json.Marshal(m)
+	return string(result)
 }

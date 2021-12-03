@@ -23,7 +23,7 @@ var (
 	sid           string
 	forceDelete   bool
 
-	infoFlag   = false
+	infoFlag = false
 )
 
 func init() {

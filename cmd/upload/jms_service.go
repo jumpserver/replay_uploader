@@ -5,28 +5,26 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jumpserver/replay_uploader/pkg/httplib"
-	"github.com/jumpserver/replay_uploader/pkg/service"
+	"github.com/jumpserver/replay_uploader/jms-sdk-go/service"
 )
 
 func NewJmsAuthService(coreHost, accessKey string) (*service.JMService, error) {
-	sigAuth, err := decodeAccessKey(accessKey)
+	keyID, secretID, err := decodeAccessKey(accessKey)
 	if err != nil {
 		return nil, err
 	}
 	return service.NewAuthJMService(
 		service.JMSCoreHost(coreHost),
 		service.JMSTimeOut(time.Minute),
-		service.JMSAuthSign(sigAuth))
+		service.JMSAccessKey(keyID, secretID))
 }
 
-func decodeAccessKey(p string) (*httplib.SigAuth, error) {
+func decodeAccessKey(p string) (keyID, secretID string, err error) {
 	accessKeyResult := strings.Split(p, ":")
 	if len(accessKeyResult) != 2 {
-		return nil, fmt.Errorf("unknow accesskey %s", p)
+		return "", "", fmt.Errorf("unknow accesskey %s", p)
 	}
-	return &httplib.SigAuth{
-		KeyID:    strings.TrimSpace(accessKeyResult[0]),
-		SecretID: strings.TrimSpace(accessKeyResult[1]),
-	}, nil
+	keyID = strings.TrimSpace(accessKeyResult[0])
+	secretID = strings.TrimSpace(accessKeyResult[1])
+	return
 }

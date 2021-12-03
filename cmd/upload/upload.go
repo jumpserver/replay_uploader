@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/jumpserver/replay_uploader/pkg/model"
-	"github.com/jumpserver/replay_uploader/pkg/storage"
+	"github.com/jumpserver/replay_uploader/storage"
+	"github.com/jumpserver/replay_uploader/util"
 )
 
 func Execute() {
@@ -23,16 +23,16 @@ func Execute() {
 		return
 	}
 	if targetDate == "" {
-		targetDate = model.GetCurrentDate()
+		targetDate = util.GetCurrentDate()
 	}
 	var err error
 	if sid == "" {
-		if sid, err = model.ParseSessionID(replayPath); err != nil {
+		if sid, err = util.ParseSessionID(replayPath); err != nil {
 			ReturnErrorMsg("无合法的会话ID", err)
 			return
 		}
 	}
-	if !model.IsValidateSessionID(sid) {
+	if !util.IsValidateSessionID(sid) {
 		msg := fmt.Sprintf("不是合法的会话ID %s", sid)
 		err := fmt.Errorf("不是合法的会话ID %s", sid)
 		ReturnErrorMsg(msg, err)
@@ -55,7 +55,7 @@ func Execute() {
 		plainAccessKey = string(bytes.TrimSpace(result))
 	}
 	if accessKey != "" {
-		result, err := model.DecodeBase64String(accessKey)
+		result, err := util.DecodeBase64String(accessKey)
 		if err != nil {
 			msg := fmt.Sprintf("无法解析 base64 字符 %s", accessKey)
 			ReturnErrorMsg(msg, err)
@@ -76,10 +76,10 @@ func Execute() {
 		return
 	}
 	dirPath := filepath.Dir(replayPath)
-	sidReplayPath := filepath.Join(dirPath, sid+model.SuffixReplayFileName)
+	sidReplayPath := filepath.Join(dirPath, sid+SuffixReplayFileName)
 
-	if !model.IsGzipFile(replayPath) {
-		if err = model.CompressToGzipFile(replayPath, sidReplayPath); err != nil {
+	if !util.IsGzipFile(replayPath) {
+		if err = util.CompressToGzipFile(replayPath, sidReplayPath); err != nil {
 			msg := fmt.Sprintf("压缩录像文件失败 %s", replayPath)
 			ReturnErrorMsg(msg, err)
 			return
@@ -87,7 +87,7 @@ func Execute() {
 		defer os.Remove(sidReplayPath)
 	} else {
 		if replayPath != sidReplayPath {
-			if err = model.CopyFile(replayPath, sidReplayPath); err != nil {
+			if err = util.CopyFile(replayPath, sidReplayPath); err != nil {
 				msg := fmt.Sprintf("录像文件重命名失败 %s", replayPath)
 				ReturnErrorMsg(msg, err)
 				return
@@ -100,7 +100,7 @@ func Execute() {
 	if replayStorage == nil {
 		err = jmsService.Upload(sid, sidReplayPath)
 	} else {
-		target := strings.Join([]string{targetDate, sid + model.SuffixReplayFileName}, "/")
+		target := strings.Join([]string{targetDate, sid + SuffixReplayFileName}, "/")
 		err = replayStorage.Upload(sidReplayPath, target)
 	}
 	if err != nil {
@@ -119,3 +119,5 @@ func Execute() {
 	msg := fmt.Sprintf("会话 %s 录像文件上传成功 %s", sid, replayPath)
 	ReturnSuccessMsg(msg)
 }
+
+const SuffixReplayFileName = ".replay.gz"
