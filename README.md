@@ -4,7 +4,7 @@
 
 ### 上传单个录像文件
 
-例： replay_uploader [flag] [flag]
+例：replay_uploader [flag] [flag]
 
 ```bash
     以下是命令行参数
@@ -34,7 +34,7 @@
 
 ## 扫描目录上传遗留录像
 
-replay_uploader scan  [flag] [flag]
+例：replay_uploader scan  [flag] [flag]
 
 ```bash
     以下是命令行参数
