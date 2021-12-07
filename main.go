@@ -1,9 +1,7 @@
 package main
 
-import (
-	"github.com/jumpserver/replay_uploader/cmd/upload"
-)
+import "github.com/jumpserver/replay_uploader/cmd"
 
 func main() {
-	upload.Execute()
+	cmd.Execute()
 }
