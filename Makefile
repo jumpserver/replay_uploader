@@ -4,10 +4,10 @@ VERSION ?=Unknown
 BuildTime:=$(shell date -u '+%Y-%m-%d %I:%M:%S%p')
 COMMIT:=$(shell git rev-parse HEAD)
 GOVERSION:=$(shell go version)
-GOLDFLAGS=-X 'github.com/jumpserver/replay_uploader/cmd/upload.Version=$(VERSION)'
-GOLDFLAGS+=-X 'github.com/jumpserver/replay_uploader/cmd/upload.BuildStamp=$(BuildTime)'
-GOLDFLAGS+=-X 'github.com/jumpserver/replay_uploader/cmd/upload.GitHash=$(COMMIT)'
-GOLDFLAGS+=-X 'github.com/jumpserver/replay_uploader/cmd/upload.GoVersion=$(GOVERSION)'
+GOLDFLAGS=-X 'github.com/jumpserver/replay_uploader/cmd.Version=$(VERSION)'
+GOLDFLAGS+=-X 'github.com/jumpserver/replay_uploader/cmd.BuildStamp=$(BuildTime)'
+GOLDFLAGS+=-X 'github.com/jumpserver/replay_uploader/cmd.GitHash=$(COMMIT)'
+GOLDFLAGS+=-X 'github.com/jumpserver/replay_uploader/cmd.GoVersion=$(GOVERSION)'
 
 GOBUILD=CGO_ENABLED=0 go build -trimpath -ldflags "$(GOLDFLAGS)"
 

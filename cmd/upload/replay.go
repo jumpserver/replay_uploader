@@ -18,14 +18,6 @@ xrdp   文件名为 sid.guac
 如果存在日期目录，targetDate 使用日期目录的
 */
 
-func ParseReplayFilesFromFlags() ([]ReplayFile, error) {
-	if scanDir != "" {
-		return ScanFromDirPath(scanDir)
-
-	}
-	return nil, nil
-}
-
 type ReplayFile struct {
 	ID        string
 	AbsPath   string

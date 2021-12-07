@@ -30,7 +30,11 @@
 ```
 ## 参数说明
 
-key 的值是 base64之后的结果，例如通过查看组件的key：`9b918f99-29b5-4e99-8c4d-aaba19271111:7568b6da-9d37-46cb-8f4f-cab2e196db23`，
+key 的值是 base64 之后的结果，例如通过查看组件的key：`9b918f99-29b5-4e99-8c4d-aaba19271111:7568b6da-9d37-46cb-8f4f-cab2e196db23`，
 然后 base64 得到 `OWI5MThmOTktMjliNS00ZTk5LThjNGQtYWFiYTE5MjcxMTExOjc1NjhiNmRhLTlkMzctNDZjYi04ZjRmLWNhYjJlMTk2ZGIyMwo=`
 
 keyfile 是存储`access key`的文件路径，内容格式类似 `9b918f99-29b5-4e99-8c4d-aaba19271111:7568b6da-9d37-46cb-8f4f-cab2e196db23`
+
+replay_uploader retry 
+
+replay_uploader remain

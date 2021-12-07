@@ -1,123 +1,42 @@
 package upload
 
 import (
-	"bytes"
-	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 
+	"github.com/jumpserver/replay_uploader/cmd/common"
+	"github.com/jumpserver/replay_uploader/jms-sdk-go/model"
+	"github.com/jumpserver/replay_uploader/jms-sdk-go/service"
 	"github.com/jumpserver/replay_uploader/storage"
 	"github.com/jumpserver/replay_uploader/util"
 )
 
-func Execute() {
-	flag.Parse()
-	if infoFlag {
-		fmt.Printf("Version:             %s\n", Version)
-		fmt.Printf("Git Commit Hash:     %s\n", GitHash)
-		fmt.Printf("UTC Build Time :     %s\n", BuildStamp)
-		fmt.Printf("Go Version:          %s\n", GoVersion)
-		return
-	}
-	if targetDate == "" {
-		targetDate = util.CurrentDate()
-	}
-	var err error
-	if sid == "" {
-		if sid, err = util.ParseSessionID(replayPath); err != nil {
-			ReturnErrorMsg("无合法的会话ID", err)
-			return
+func Execute(jmsService *service.JMService, conf *model.TerminalConfig, replay *common.ReplayFile, successCallback func()) error {
+	replayAbsGzPath := replay.AbsFilePath
+	if !util.IsGzipFile(replayAbsGzPath) {
+		dirPath := filepath.Dir(replay.AbsFilePath)
+		replayAbsGzPath = filepath.Join(dirPath, replay.GetGzFilename())
+		if err := util.CompressToGzipFile(replay.AbsFilePath, replayAbsGzPath); err != nil {
+			return fmt.Errorf("压缩录像文件失败 %s: %s", replay.AbsFilePath, err)
 		}
-	}
-	if !util.IsUUID(sid) {
-		msg := fmt.Sprintf("不是合法的会话ID %s", sid)
-		err := fmt.Errorf("不是合法的会话ID %s", sid)
-		ReturnErrorMsg(msg, err)
-		return
-	}
-	if replayPath == "" {
-		err := fmt.Errorf("未发现录像文件: %s", replayPath)
-		ReturnErrorMsg("未发现录像文件", err)
-		return
+		defer os.Remove(replayAbsGzPath)
 	}
 
-	plainAccessKey := ""
-	if accessKeyFile != "" {
-		result, err := ioutil.ReadFile(accessKeyFile)
-		if err != nil {
-			msg := fmt.Sprintf("读取 access key 文件失败 %s", accessKeyFile)
-			ReturnErrorMsg(msg, err)
-			return
+	if replayStorage := storage.NewReplayStorage(conf); replayStorage != nil {
+		if err := replayStorage.Upload(replayAbsGzPath, replay.TargetPath()); err != nil {
+			return fmt.Errorf("上传文件失败 %s", err)
 		}
-		plainAccessKey = string(bytes.TrimSpace(result))
-	}
-	if accessKey != "" {
-		result, err := util.DecodeBase64String(accessKey)
-		if err != nil {
-			msg := fmt.Sprintf("无法解析 base64 字符 %s", accessKey)
-			ReturnErrorMsg(msg, err)
-			return
-		}
-		plainAccessKey = result
-	}
-	jmsService, err := NewJmsAuthService(coreHost, plainAccessKey)
-	if err != nil {
-		msg := fmt.Sprintf("Core URL或认证信息失败: %s %s", coreHost, accessKey)
-		ReturnErrorMsg(msg, err)
-		return
-	}
-	terminalConfig, err := jmsService.GetTerminalConfig()
-	if err != nil {
-		msg := fmt.Sprintf("与JMS Core %s 获取配置失败", coreHost)
-		ReturnErrorMsg(msg, err)
-		return
-	}
-	dirPath := filepath.Dir(replayPath)
-	sidReplayPath := filepath.Join(dirPath, sid+SuffixReplayFileName)
-
-	if !util.IsGzipFile(replayPath) {
-		if err = util.CompressToGzipFile(replayPath, sidReplayPath); err != nil {
-			msg := fmt.Sprintf("压缩录像文件失败 %s", replayPath)
-			ReturnErrorMsg(msg, err)
-			return
-		}
-		defer os.Remove(sidReplayPath)
 	} else {
-		if replayPath != sidReplayPath {
-			if err = util.CopyFile(replayPath, sidReplayPath); err != nil {
-				msg := fmt.Sprintf("录像文件重命名失败 %s", replayPath)
-				ReturnErrorMsg(msg, err)
-				return
-			}
-			defer os.Remove(sidReplayPath)
+		if err := jmsService.UploadReplay(replay.ID, replayAbsGzPath, replay.Version); err != nil {
+			return fmt.Errorf("上传文件失败 %s", err)
 		}
 	}
-
-	replayStorage := storage.NewReplayStorage(&terminalConfig)
-	if replayStorage == nil {
-		err = jmsService.Upload(sid, sidReplayPath)
-	} else {
-		target := strings.Join([]string{targetDate, sid + SuffixReplayFileName}, "/")
-		err = replayStorage.Upload(sidReplayPath, target)
+	if successCallback != nil {
+		successCallback()
 	}
-	if err != nil {
-		msg := fmt.Sprintf("上传文件失败 %s", sidReplayPath)
-		ReturnErrorMsg(msg, err)
-		return
+	if err := jmsService.FinishReply(replay.ID); err != nil {
+		return fmt.Errorf("通知Core录像文件上传完成失败: %s", err)
 	}
-	if forceDelete {
-		_ = os.Remove(replayPath)
-	}
-	err = jmsService.FinishReply(sid)
-	if err != nil {
-		ReturnErrorMsg("通知Core录像文件上传完成失败", err)
-		return
-	}
-	msg := fmt.Sprintf("会话 %s 录像文件上传成功 %s", sid, replayPath)
-	ReturnSuccessMsg(msg)
+	return nil
 }
-
-const SuffixReplayFileName = ".replay.gz"
