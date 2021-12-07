@@ -12,7 +12,7 @@ import (
 	"github.com/jumpserver/replay_uploader/util"
 )
 
-func Execute(jmsService *service.JMService, conf *model.TerminalConfig, replay *common.ReplayFile, successCallback func()) error {
+func Execute(jmsService *service.JMService, conf *model.TerminalConfig, replay *common.ReplayFile) error {
 	replayAbsGzPath := replay.AbsFilePath
 	if !util.IsGzipFile(replayAbsGzPath) {
 		dirPath := filepath.Dir(replay.AbsFilePath)
@@ -31,9 +31,6 @@ func Execute(jmsService *service.JMService, conf *model.TerminalConfig, replay *
 		if err := jmsService.UploadReplay(replay.ID, replayAbsGzPath, replay.Version); err != nil {
 			return fmt.Errorf("上传文件失败 %s", err)
 		}
-	}
-	if successCallback != nil {
-		successCallback()
 	}
 	if err := jmsService.FinishReply(replay.ID); err != nil {
 		return fmt.Errorf("通知Core录像文件上传完成失败: %s", err)
