@@ -27,7 +27,7 @@
     --sid string
     Session ID, 会话ID （如果不写，则从 Replay file 文件名中提取会话 session id）
 
-    -url string
+    --url string
     JumpServer URL，JMS Core的地址 (default "http://127.0.0.1:8080")
 
 ```
