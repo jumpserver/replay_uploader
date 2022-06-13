@@ -4,13 +4,15 @@ VERSION ?=Unknown
 BuildTime:=$(shell date -u '+%Y-%m-%d %I:%M:%S%p')
 COMMIT:=$(shell git rev-parse HEAD)
 GOVERSION:=$(shell go version)
+
+LDFLAGS=-w -s
+
 GOLDFLAGS=-X 'github.com/jumpserver/replay_uploader/cmd.Version=$(VERSION)'
 GOLDFLAGS+=-X 'github.com/jumpserver/replay_uploader/cmd.BuildStamp=$(BuildTime)'
 GOLDFLAGS+=-X 'github.com/jumpserver/replay_uploader/cmd.GitHash=$(COMMIT)'
 GOLDFLAGS+=-X 'github.com/jumpserver/replay_uploader/cmd.GoVersion=$(GOVERSION)'
 
-GOBUILD=CGO_ENABLED=0 go build -trimpath -ldflags "$(GOLDFLAGS)"
-
+GOBUILD=CGO_ENABLED=0 go build -trimpath -ldflags "$(GOLDFLAGS) ${LDFLAGS}"
 
 PLATFORM_LIST = \
 	darwin-amd64 \
@@ -46,6 +48,13 @@ linux-amd64:
 
 linux-arm64:
 	GOARCH=arm64 GOOS=linux $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@
+	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
+	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
+	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
+	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$@ $(BUILDDIR)/$(NAME)-$@
+
+linux-loong64:
+	GOARCH=loong64 GOOS=linux $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@
 	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
 	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
 	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
