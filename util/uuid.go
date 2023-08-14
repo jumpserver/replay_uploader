@@ -1,8 +1,8 @@
 package util
 
-import uuid "github.com/satori/go.uuid"
+import "github.com/google/uuid"
 
 func IsUUID(sid string) bool {
-	_, err := uuid.FromString(sid)
+	_, err := uuid.Parse(sid)
 	return err == nil
 }

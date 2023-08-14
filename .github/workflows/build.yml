@@ -29,14 +29,13 @@ jobs:
           echo "::set-output name=VERSION::$VERSION"
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: release-drafter/release-drafter@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: true
-          prerelease: false
+          config-name: release-config.yml
+          version: ${{ steps.get_version.outputs.TAG }}
+          tag: ${{ steps.get_version.outputs.TAG }}
       - uses: actions/setup-go@v2
         with:
           go-version: '1.17.x' # The Go version to download (if necessary) and use.
