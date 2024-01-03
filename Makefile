@@ -14,75 +14,52 @@ GOLDFLAGS+=-X 'github.com/jumpserver/replay_uploader/cmd.GoVersion=$(GOVERSION)'
 
 GOBUILD=CGO_ENABLED=0 go build -trimpath -ldflags "$(GOLDFLAGS) ${LDFLAGS}"
 
-PLATFORM_LIST = \
-	darwin-amd64 \
-	darwin-arm64 \
-	linux-amd64 \
-	linux-arm64 \
-	linux-s390x \
-	linux-ppc64le
+define make_artifact_full
+	GOOS=$(1) GOARCH=$(2) $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$(1)-$(2)
+	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$(1)-$(2)/
+	cp $(BUILDDIR)/$(NAME)-$(1)-$(2) $(BUILDDIR)/$(NAME)-$(VERSION)-$(1)-$(2)/$(NAME)
+	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$(1)-$(2).tar.gz $(NAME)-$(VERSION)-$(1)-$(2)/
+	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$(1)-$(2)/ $(BUILDDIR)/$(NAME)-$(1)-$(2)
+endef
 
-WINDOWS_ARCH_LIST = \
-	windows-amd64
+build:
+	$(GOBUILD) -o $(BUILDDIR)/$(NAME) .
 
-all-arch: $(PLATFORM_LIST) $(WINDOWS_ARCH_LIST)
+all:
+	$(call make_artifact_full,darwin,amd64)
+	$(call make_artifact_full,darwin,arm64)
+	$(call make_artifact_full,linux,amd64)
+	$(call make_artifact_full,linux,arm64)
+	$(call make_artifact_full,linux,ppc64le)
+	$(call make_artifact_full,linux,s390x)
+	$(call make_artifact_full,linux,riscv64)
+
+local:
+	$(call make_artifact_full,$(shell go env GOOS),$(shell go env GOARCH))
 
 darwin-amd64:
-	GOARCH=amd64 GOOS=darwin $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@
-	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
-	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
-	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
-	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$@ $(BUILDDIR)/$(NAME)-$@
+	$(call make_artifact_full,darwin,amd64)
 
 darwin-arm64:
-	GOARCH=arm64 GOOS=darwin $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@
-	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
-	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
-	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
-	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$@ $(BUILDDIR)/$(NAME)-$@
+	$(call make_artifact_full,darwin,arm64)
 
 linux-amd64:
-	GOARCH=amd64 GOOS=linux $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@
-	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
-	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
-	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
-	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$@ $(BUILDDIR)/$(NAME)-$@
+	$(call make_artifact_full,linux,amd64)
 
 linux-arm64:
-	GOARCH=arm64 GOOS=linux $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@
-	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
-	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
-	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
-	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$@ $(BUILDDIR)/$(NAME)-$@
-
-linux-s390x:
-	GOARCH=s390x GOOS=linux $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@ .
-	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
-	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
-	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
-	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$@ $(BUILDDIR)/$(NAME)-$@
-
-linux-ppc64le:
-	GOARCH=ppc64le GOOS=linux $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@ .
-	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
-	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
-	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
-	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$@ $(BUILDDIR)/$(NAME)-$@
-
+	$(call make_artifact_full,linux,arm64)
 
 linux-loong64:
-	GOARCH=loong64 GOOS=linux $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@
-	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
-	cp $(BUILDDIR)/$(NAME)-$@ $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME)
-	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
-	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$@ $(BUILDDIR)/$(NAME)-$@
+	$(call make_artifact_full,linux,loong64)
 
-windows-amd64:
-	GOARCH=amd64 GOOS=windows $(GOBUILD) -o $(BUILDDIR)/$(NAME)-$@.exe
-	mkdir -p $(BUILDDIR)/$(NAME)-$(VERSION)-$@/
-	cp $(BUILDDIR)/$(NAME)-$@.exe $(BUILDDIR)/$(NAME)-$(VERSION)-$@/$(NAME).exe
-	cd $(BUILDDIR) && tar -czvf $(NAME)-$(VERSION)-$@.tar.gz $(NAME)-$(VERSION)-$@
-	rm -rf $(BUILDDIR)/$(NAME)-$(VERSION)-$@ $(BUILDDIR)/$(NAME)-$@.exe
+linux-ppc64le:
+	$(call make_artifact_full,linux,ppc64le)
+
+linux-s390x:
+	$(call make_artifact_full,linux,s390x)
+
+linux-riscv64:
+	$(call make_artifact_full,linux,riscv64)
 
 clean:
 	rm -rf $(BUILDDIR)
