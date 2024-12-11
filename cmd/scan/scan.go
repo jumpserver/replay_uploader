@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/jumpserver/replay_uploader/cmd/common"
 	"github.com/jumpserver/replay_uploader/cmd/upload"
@@ -63,6 +64,12 @@ func Execute(jmsService *service.JMService, conf *model.TerminalConfig, rootDir 
 		ReturnResp(os.Stdout, res)
 		return
 	}
+	// DISABLED_DELAY_UPLOAD
+
+	if os.Getenv("DISABLED_DELAY_UPLOAD") != "1" {
+		time.Sleep(10 * time.Minute)
+	}
+
 	var (
 		successFiles []string
 		failureFiles []string
