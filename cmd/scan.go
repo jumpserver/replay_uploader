@@ -3,7 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -30,7 +30,7 @@ var scanCommand = &cobra.Command{
 			plainAccessKey string
 		)
 		if accessKeyFile != "" {
-			result, err := ioutil.ReadFile(accessKeyFile)
+			result, err := os.ReadFile(accessKeyFile)
 			if err != nil {
 				msg := fmt.Sprintf("读取 access key 文件失败 %s", accessKeyFile)
 				common.ReturnErrorMsg(msg, err)

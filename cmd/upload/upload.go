@@ -5,10 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/jumpserver-dev/sdk-go/model"
+	"github.com/jumpserver-dev/sdk-go/service"
+	"github.com/jumpserver-dev/sdk-go/storage"
+
 	"github.com/jumpserver/replay_uploader/cmd/common"
-	"github.com/jumpserver/replay_uploader/jms-sdk-go/model"
-	"github.com/jumpserver/replay_uploader/jms-sdk-go/service"
-	"github.com/jumpserver/replay_uploader/storage"
 	"github.com/jumpserver/replay_uploader/util"
 )
 
@@ -22,8 +23,12 @@ func Execute(jmsService *service.JMService, conf *model.TerminalConfig, replay *
 		}
 		defer os.Remove(replayAbsGzPath)
 	}
+	fileInfo, err := os.Stat(replayAbsGzPath)
+	if err != nil {
+		return fmt.Errorf("获取录像文件信息失败 %s: %s", replayAbsGzPath, err)
+	}
 
-	if replayStorage := storage.NewReplayStorage(conf); replayStorage != nil {
+	if replayStorage := storage.NewReplayStorage(jmsService, conf.ReplayStorage); replayStorage != nil {
 		if err := replayStorage.Upload(replayAbsGzPath, replay.TargetPath()); err != nil {
 			return fmt.Errorf("上传文件失败 %s", err)
 		}
@@ -32,7 +37,7 @@ func Execute(jmsService *service.JMService, conf *model.TerminalConfig, replay *
 			return fmt.Errorf("上传文件失败 %s", err)
 		}
 	}
-	if err := jmsService.FinishReply(replay.ID); err != nil {
+	if _, err := jmsService.FinishReplyWithSize(replay.ID, fileInfo.Size()); err != nil {
 		return fmt.Errorf("通知Core录像文件上传完成失败: %s", err)
 	}
 	return nil

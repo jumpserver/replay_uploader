@@ -3,14 +3,13 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/spf13/cobra"
 
+	"github.com/jumpserver-dev/sdk-go/model"
 	"github.com/jumpserver/replay_uploader/cmd/common"
 	"github.com/jumpserver/replay_uploader/cmd/upload"
-	"github.com/jumpserver/replay_uploader/jms-sdk-go/model"
 	"github.com/jumpserver/replay_uploader/util"
 )
 
@@ -30,7 +29,7 @@ var rootCmd = &cobra.Command{
 			plainAccessKey string
 		)
 		if accessKeyFile != "" {
-			result, err := ioutil.ReadFile(accessKeyFile)
+			result, err := os.ReadFile(accessKeyFile)
 			if err != nil {
 				msg := fmt.Sprintf("读取 access key 文件失败 %s", accessKeyFile)
 				common.ReturnErrorMsg(msg, err)
