@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/jumpserver-dev/sdk-go/model"
+	"github.com/jumpserver-dev/sdk-go/service"
 	"github.com/jumpserver/replay_uploader/cmd/common"
 	"github.com/jumpserver/replay_uploader/cmd/upload"
-	"github.com/jumpserver/replay_uploader/jms-sdk-go/model"
-	"github.com/jumpserver/replay_uploader/jms-sdk-go/service"
 )
 
 func Execute(jmsService *service.JMService, conf *model.TerminalConfig, rootDir string, forceDelete bool) {

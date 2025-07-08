@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jumpserver/replay_uploader/jms-sdk-go/model"
+	"github.com/jumpserver-dev/sdk-go/model"
 	"github.com/jumpserver/replay_uploader/util"
 )
 

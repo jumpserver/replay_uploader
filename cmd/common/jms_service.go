@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jumpserver/replay_uploader/jms-sdk-go/service"
+	"github.com/jumpserver-dev/sdk-go/service"
 )
 
 func NewJmsAuthService(coreHost, accessKey string) (*service.JMService, error) {
