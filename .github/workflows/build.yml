@@ -36,7 +36,7 @@ jobs:
           config-name: release-config.yml
           version: ${{ steps.get_version.outputs.TAG }}
           tag: ${{ steps.get_version.outputs.TAG }}
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v5
         with:
           go-version: 'stable' # The Go version to download (if necessary) and use.
       - name: Make Build
