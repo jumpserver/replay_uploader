@@ -4,7 +4,7 @@ go 1.24.6
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/jumpserver-dev/sdk-go v0.0.0-20250708045559-e0977dde0649
+	github.com/jumpserver-dev/sdk-go v0.0.0-20260126075605-97350b6bf9e3
 	github.com/spf13/cobra v1.10.1
 )
 
@@ -40,13 +40,14 @@ require (
 )
 
 require (
-	github.com/Azure/azure-pipeline-go v0.1.9 // indirect
-	github.com/Azure/azure-storage-blob-go v0.6.0 // indirect
-	github.com/aliyun/aliyun-oss-go-sdk v2.2.8+incompatible // indirect
+	github.com/Azure/azure-pipeline-go v0.2.3 // indirect
+	github.com/Azure/azure-storage-blob-go v0.15.0 // indirect
+	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible // indirect
 	github.com/aws/aws-sdk-go v1.44.306 // indirect
-	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.21.8+incompatible // indirect
+	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.25.4+incompatible // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/mattn/go-ieproxy v0.0.1 // indirect
 	github.com/shirou/gopsutil/v3 v3.24.5 // indirect
-	golang.org/x/time v0.6.0 // indirect
+	golang.org/x/time v0.12.0 // indirect
 )
